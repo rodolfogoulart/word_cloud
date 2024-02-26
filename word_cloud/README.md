@@ -136,10 +136,10 @@ for (int  i  =  0; i  <  data_list.length; i++) {
   void tap(){
     setState(() {
       count += 1;
-      wordstring = data_list[i]['word'];
+      wordstring = data_list[i].word;
     });
   }
-  wordtaps.addWordtap(data_list[i]['word'], tap);
+  wordtaps.addWordtap(data_list[i].word, tap);
 }
 ```
 

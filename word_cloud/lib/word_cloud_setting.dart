@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:word_cloud/word_cloud_data.dart';
 import 'package:word_cloud/word_cloud_shape.dart';
 
 class WordCloudSetting {
@@ -8,7 +9,7 @@ class WordCloudSetting {
   String? fontFamily;
   FontStyle? fontStyle;
   FontWeight? fontWeight;
-  List<Map> data = [];
+  List<Data> data = [];
   List map = [[]];
   List textCenter = [];
   List textPoints = [];
@@ -61,8 +62,7 @@ class WordCloudSetting {
       case 'circle':
         for (var i = 0; i < mapX; i++) {
           for (var j = 0; j < mapY; j++) {
-            if (pow(i - (mapX / 2), 2) + pow(j - (mapY / 2), 2) >
-                pow(shape.getRadius(), 2)) {
+            if (pow(i - (mapX / 2), 2) + pow(j - (mapY / 2), 2) > pow(shape.getRadius(), 2)) {
               makemap[i].add(1);
             } else {
               makemap[i].add(0);
@@ -75,8 +75,7 @@ class WordCloudSetting {
       case 'ellipse':
         for (var i = 0; i < mapX; i++) {
           for (var j = 0; j < mapY; j++) {
-            if (pow(i - (mapX / 2), 2) / pow(shape.getMajorAxis(), 2) +
-                    pow(j - (mapY / 2), 2) / pow(shape.getMinorAxis(), 2) >
+            if (pow(i - (mapX / 2), 2) / pow(shape.getMajorAxis(), 2) + pow(j - (mapY / 2), 2) / pow(shape.getMinorAxis(), 2) >
                 1) {
               makemap[i].add(1);
             } else {
@@ -114,22 +113,21 @@ class WordCloudSetting {
     // }
 
     for (var i = 0; i < data.length; i++) {
-      double denominator = data[0]['value'] - data[data.length - 1]['value'];
+      double denominator = (data[0].value - data[data.length - 1].value).toDouble();
 
       double getTextSize;
       if (denominator != 0) {
-        getTextSize = (minTextSize * (data[0]['value'] - data[i]['value']) +
-                maxTextSize *
-                    (data[i]['value'] - data[data.length - 1]['value'])) /
-            denominator;
+        getTextSize =
+            (minTextSize * (data[0].value - data[i].value) + maxTextSize * (data[i].value - data[data.length - 1].value)) /
+                denominator;
       } else {
         getTextSize = (minTextSize + maxTextSize) / 2;
       }
-
+      data[i].color = data[i].color ?? colorList?[Random().nextInt(colorList!.length)];
       final textSpan = TextSpan(
-        text: data[i]['word'],
+        text: data[i].word,
         style: TextStyle(
-          color: colorList?[Random().nextInt(colorList!.length)],
+          color: data[i].color,
           fontSize: getTextSize,
           fontWeight: fontWeight,
           fontFamily: fontFamily,
@@ -162,13 +160,11 @@ class WordCloudSetting {
 
     for (var i = 0; i < data.length; i++) {
       double getTextSize =
-          (minTextSize * (data[0]['value'] - data[i]['value']) +
-                  maxTextSize *
-                      (data[i]['value'] - data[data.length - 1]['value'])) /
-              (data[0]['value'] - data[data.length - 1]['value']);
+          (minTextSize * (data[0].value - data[i].value) + maxTextSize * (data[i].value - data[data.length - 1].value)) /
+              (data[0].value - data[data.length - 1].value);
 
       final textSpan = TextSpan(
-        text: data[i]['word'],
+        text: data[i].word,
         style: TextStyle(
           color: newstyle[i].color,
           fontSize: getTextSize,
@@ -232,9 +228,7 @@ class WordCloudSetting {
   void drawIn(int index, double x, double y) {
     textPoints[index] = [x, y];
     for (int i = x.toInt(); i < x.toInt() + textlist[index].width; i++) {
-      for (int j = y.toInt();
-          j < y.toInt() + textlist[index].height.floor();
-          j++) {
+      for (int j = y.toInt(); j < y.toInt() + textlist[index].height.floor(); j++) {
         map[i][j] = 1;
       }
     }

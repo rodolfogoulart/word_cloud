@@ -1,8 +1,9 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:word_cloud/word_cloud_data.dart';
 import 'package:word_cloud/word_cloud_shape.dart';
-import 'package:word_cloud/word_cloud_tap.dart';
-import 'package:word_cloud/word_cloud_tap_view.dart';
 import 'package:word_cloud/word_cloud_view.dart';
 
 void main() {
@@ -35,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //example data list
-  List<Map> word_list = [
+  List<Map<String, dynamic>> wordList = [
     {'word': 'Apple', 'value': 100},
     {'word': 'Samsung', 'value': 60},
     {'word': 'Intel', 'value': 55},
@@ -115,24 +116,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    WordCloudData wcdata = WordCloudData(data: word_list);
-    WordCloudTap wordtaps = WordCloudTap();
-
-
-    //WordCloudTap Setting
-    for (int i = 0; i < word_list.length; i++) {
-      void tap() {
-        setState(() {
-          count += 1;
-          wordstring = word_list[i]['word'];
-        });
-      }
-
-      wordtaps.addWordtap(word_list[i]['word'], tap);
-    }
-
-
+    WordCloudData wcdata = WordCloudData(
+        data: wordList
+            .map((e) => Data(
+                  word: e['word'],
+                  value: e['value'].toDouble(),
+                  metaData: 'Some meta data here, can be anything you want',
+                ))
+            .toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -140,40 +131,37 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Clicked Word : ${wordstring}', style: TextStyle(fontSize: 20),),
-            Text('Clicked Count : ${count}', style: TextStyle(fontSize: 20)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                WordCloudTapView(
-                  data: wcdata,
-                  wordtap: wordtaps,
-                  mapcolor: Color.fromARGB(255, 174, 183, 235),
-                  mapwidth: 500,
-                  mapheight: 500,
-                  fontWeight: FontWeight.bold,
-                  shape: WordCloudCircle(radius: 250),
-                  colorlist: [Colors.black, Colors.redAccent, Colors.indigoAccent],
-                ),
-                SizedBox(
-                  height: 15,
-                  width:30,
-                ),
-                WordCloudView(
-                  data: wcdata,
-                  mapcolor: Color.fromARGB(255, 174, 183, 235),
-                  mapwidth: 500,
-                  mapheight: 500,
-                  fontWeight: FontWeight.bold,
-                  colorlist: [Colors.black, Colors.redAccent, Colors.indigoAccent],
-                ),
-              ],
-            ),
-          ]
-        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Text(
+            'Clicked Word : $wordstring',
+            style: const TextStyle(fontSize: 20),
+          ),
+          Text('Clicked Count : $count', style: const TextStyle(fontSize: 20)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              WordCloudView(
+                data: wcdata,
+                mapcolor: const Color.fromARGB(255, 174, 183, 235),
+                mapwidth: 500,
+                mapheight: 500,
+                fontWeight: FontWeight.bold,
+                colorlist: const [Colors.black, Colors.redAccent, Colors.indigoAccent],
+                shape: WordCloudEllipse(majoraxis: 500, minoraxis: 500),
+                onTap: (word, value, metaData) {
+                  setState(() {
+                    count++;
+                    wordstring = word;
+                  });
+                  if (kDebugMode) {
+                    print('word : $word, value : $value, metaData : $metaData');
+                  }
+                },
+                tooltipMessage: (word, value, metaData) => ' word : $word, value : $value',
+              ),
+            ],
+          ),
+        ]),
       ),
     );
   }
