@@ -188,61 +188,22 @@ class WordCloudSetting {
     }
   }
 
-  // void setTextStyle(List<TextStyle> newstyle) {
-  //   //only support color, weight, family, fontstyle
-  //   textlist = [];
-  //   textCenter = [];
-  //   textPoints = [];
-  //   isdrawed = [];
-
-  //   for (var i = 0; i < data.length; i++) {
-  //     double getTextSize =
-  //         (minTextSize * (data[0].value - data[i].value) + maxTextSize * (data[i].value - data[data.length - 1].value)) /
-  //             (data[0].value - data[data.length - 1].value);
-
-  //     final textSpan = TextSpan(
-  //       text: data[i].word,
-  //       style: TextStyle(
-  //         color: newstyle[i].color,
-  //         fontSize: getTextSize,
-  //         fontWeight: newstyle[i].fontWeight,
-  //         fontFamily: newstyle[i].fontFamily,
-  //         fontStyle: newstyle[i].fontStyle,
-  //       ),
-  //     );
-
-  //     final textPainter = TextPainter()
-  //       ..text = textSpan
-  //       ..textDirection = TextDirection.ltr
-  //       ..textAlign = TextAlign.center
-  //       ..layout();
-
-  //     textlist.add(textPainter);
-
-  //     double centerCorrectionX = centerX - textlist[i].width / 2;
-  //     double centerCorrectionY = centerY - textlist[i].height / 2;
-  //     textCenter.add([centerCorrectionX, centerCorrectionY]);
-  //     textPoints.add([]);
-  //     isdrawed.add(false);
+  // bool checkMap(double x, double y, double w, double h) {
+  //   if (mapX - x < w) {
+  //     return false;
   //   }
+  //   if (mapY - y < h) {
+  //     return false;
+  //   }
+  //   for (int i = x.toInt(); i < x.toInt() + w; i++) {
+  //     for (int j = y.toInt(); j < y.toInt() + h; j++) {
+  //       if (map[i][j] == 1) {
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   return true;
   // }
-
-  bool checkMap(double x, double y, double w, double h) {
-    if (mapX - x < w) {
-      return false;
-    }
-    if (mapY - y < h) {
-      return false;
-    }
-    for (int i = x.toInt(); i < x.toInt() + w; i++) {
-      for (int j = y.toInt(); j < y.toInt() + h; j++) {
-        if (map[i][j] == 1) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
 
   bool checkMapOptimized(int x, int y, double w, double h) {
     if (mapX - x < w) {
@@ -316,68 +277,68 @@ class WordCloudSetting {
     }
   }
 
-  void drawText() {
-    drawIn(0, textCenter[0][0], textCenter[0][1]);
-    for (var i = 1; i < textlist.length; i++) {
-      double w = textlist[i].width;
-      double h = textlist[i].height;
-      int attempts = 0;
+  // void drawText() {
+  //   drawIn(0, textCenter[0][0], textCenter[0][1]);
+  //   for (var i = 1; i < textlist.length; i++) {
+  //     double w = textlist[i].width;
+  //     double h = textlist[i].height;
+  //     int attempts = 0;
 
-      bool isadded = false;
+  //     bool isadded = false;
 
-      while (!isadded) {
-        int getX = Random().nextInt(mapX.toInt() - w.toInt());
-        int direction = Random().nextInt(2);
-        if (direction == 0) {
-          for (int y = textCenter[i][1].toInt(); y > 0; y--) {
-            if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
-              drawIn(i, getX.toDouble(), y.toDouble());
-              isadded = true;
-              break;
-            }
-          }
-          if (!isadded) {
-            for (int y = textCenter[i][1].toInt(); y < mapY; y++) {
-              if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
-                drawIn(i, getX.toDouble(), y.toDouble());
-                isadded = true;
-                break;
-              }
-            }
-          }
-        } else if (direction == 1) {
-          for (int y = textCenter[i][1].toInt(); y < mapY; y++) {
-            if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
-              drawIn(i, getX.toDouble(), y.toDouble());
-              isadded = true;
-              break;
-            }
-          }
-          if (!isadded) {
-            for (int y = textCenter[i][1].toInt(); y > 0; y--) {
-              if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
-                drawIn(i, getX.toDouble(), y.toDouble());
-                isadded = true;
-                break;
-              }
-            }
-          }
-        }
-        attempts += 1;
-        if (attempts > attempt) {
-          isadded = true;
-        }
-      }
-    }
-  }
+  //     while (!isadded) {
+  //       int getX = Random().nextInt(mapX.toInt() - w.toInt());
+  //       int direction = Random().nextInt(2);
+  //       if (direction == 0) {
+  //         for (int y = textCenter[i][1].toInt(); y > 0; y--) {
+  //           if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
+  //             drawIn(i, getX.toDouble(), y.toDouble());
+  //             isadded = true;
+  //             break;
+  //           }
+  //         }
+  //         if (!isadded) {
+  //           for (int y = textCenter[i][1].toInt(); y < mapY; y++) {
+  //             if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
+  //               drawIn(i, getX.toDouble(), y.toDouble());
+  //               isadded = true;
+  //               break;
+  //             }
+  //           }
+  //         }
+  //       } else if (direction == 1) {
+  //         for (int y = textCenter[i][1].toInt(); y < mapY; y++) {
+  //           if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
+  //             drawIn(i, getX.toDouble(), y.toDouble());
+  //             isadded = true;
+  //             break;
+  //           }
+  //         }
+  //         if (!isadded) {
+  //           for (int y = textCenter[i][1].toInt(); y > 0; y--) {
+  //             if (checkMap(getX.toDouble(), y.toDouble(), w, h)) {
+  //               drawIn(i, getX.toDouble(), y.toDouble());
+  //               isadded = true;
+  //               break;
+  //             }
+  //           }
+  //         }
+  //       }
+  //       attempts += 1;
+  //       if (attempts > attempt) {
+  //         isadded = true;
+  //       }
+  //     }
+  //   }
+  // }
 
   List getWordPoint() {
     return textPoints;
   }
 
-  List getTextPainter() {
-    return textlist;
-  }
+  // List getTextPainter() {
+  //   return textlist;
+  // }
 
   int getDataLength() {
     return data.length;
