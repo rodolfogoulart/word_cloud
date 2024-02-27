@@ -1,7 +1,29 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import 'package:word_cloud/word_cloud_data.dart';
 import 'package:word_cloud/word_cloud_shape.dart';
+
+class DataSetting {
+  int index;
+  Color? color;
+  String? fontFamily;
+  FontStyle? fontStyle;
+  FontWeight? fontWeight;
+  double? fontSize;
+  Size? size;
+  DataSetting({
+    required this.index,
+    this.color,
+    this.fontFamily,
+    this.fontStyle,
+    this.fontWeight,
+    this.fontSize,
+    this.size,
+  });
+}
 
 class WordCloudSetting {
   double mapX = 0;
@@ -22,6 +44,7 @@ class WordCloudSetting {
   WordCloudShape shape;
   int attempt;
   List<Color>? colorList = [Colors.black];
+  List<DataSetting> dataSetting = [];
 
   WordCloudSetting({
     Key? key,
@@ -123,11 +146,12 @@ class WordCloudSetting {
       } else {
         getTextSize = (minTextSize + maxTextSize) / 2;
       }
-      data[i].color = data[i].color ?? colorList?[Random().nextInt(colorList!.length)];
+      var color = colorList?[Random().nextInt(colorList!.length)];
+
       final textSpan = TextSpan(
         text: data[i].word,
         style: TextStyle(
-          color: data[i].color,
+          color: color,
           fontSize: getTextSize,
           fontWeight: fontWeight,
           fontFamily: fontFamily,
@@ -140,6 +164,19 @@ class WordCloudSetting {
         ..textDirection = TextDirection.ltr
         ..textAlign = TextAlign.center
         ..layout();
+      if (!dataSetting.contains((element) => element.index == i)) {
+        dataSetting.add(
+          DataSetting(
+            index: i,
+            color: color,
+            fontSize: getTextSize,
+            fontFamily: fontFamily,
+            fontStyle: fontStyle,
+            fontWeight: fontWeight,
+            size: Size(textPainter.width, textPainter.height),
+          ),
+        );
+      }
 
       textlist.add(textPainter);
 
@@ -151,44 +188,44 @@ class WordCloudSetting {
     }
   }
 
-  void setTextStyle(List<TextStyle> newstyle) {
-    //only support color, weight, family, fontstyle
-    textlist = [];
-    textCenter = [];
-    textPoints = [];
-    isdrawed = [];
+  // void setTextStyle(List<TextStyle> newstyle) {
+  //   //only support color, weight, family, fontstyle
+  //   textlist = [];
+  //   textCenter = [];
+  //   textPoints = [];
+  //   isdrawed = [];
 
-    for (var i = 0; i < data.length; i++) {
-      double getTextSize =
-          (minTextSize * (data[0].value - data[i].value) + maxTextSize * (data[i].value - data[data.length - 1].value)) /
-              (data[0].value - data[data.length - 1].value);
+  //   for (var i = 0; i < data.length; i++) {
+  //     double getTextSize =
+  //         (minTextSize * (data[0].value - data[i].value) + maxTextSize * (data[i].value - data[data.length - 1].value)) /
+  //             (data[0].value - data[data.length - 1].value);
 
-      final textSpan = TextSpan(
-        text: data[i].word,
-        style: TextStyle(
-          color: newstyle[i].color,
-          fontSize: getTextSize,
-          fontWeight: newstyle[i].fontWeight,
-          fontFamily: newstyle[i].fontFamily,
-          fontStyle: newstyle[i].fontStyle,
-        ),
-      );
+  //     final textSpan = TextSpan(
+  //       text: data[i].word,
+  //       style: TextStyle(
+  //         color: newstyle[i].color,
+  //         fontSize: getTextSize,
+  //         fontWeight: newstyle[i].fontWeight,
+  //         fontFamily: newstyle[i].fontFamily,
+  //         fontStyle: newstyle[i].fontStyle,
+  //       ),
+  //     );
 
-      final textPainter = TextPainter()
-        ..text = textSpan
-        ..textDirection = TextDirection.ltr
-        ..textAlign = TextAlign.center
-        ..layout();
+  //     final textPainter = TextPainter()
+  //       ..text = textSpan
+  //       ..textDirection = TextDirection.ltr
+  //       ..textAlign = TextAlign.center
+  //       ..layout();
 
-      textlist.add(textPainter);
+  //     textlist.add(textPainter);
 
-      double centerCorrectionX = centerX - textlist[i].width / 2;
-      double centerCorrectionY = centerY - textlist[i].height / 2;
-      textCenter.add([centerCorrectionX, centerCorrectionY]);
-      textPoints.add([]);
-      isdrawed.add(false);
-    }
-  }
+  //     double centerCorrectionX = centerX - textlist[i].width / 2;
+  //     double centerCorrectionY = centerY - textlist[i].height / 2;
+  //     textCenter.add([centerCorrectionX, centerCorrectionY]);
+  //     textPoints.add([]);
+  //     isdrawed.add(false);
+  //   }
+  // }
 
   bool checkMap(double x, double y, double w, double h) {
     if (mapX - x < w) {

@@ -1,19 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Data {
   String word;
   double value;
   //to store some metadata
   dynamic metaData;
-  Color? color;
   Data({
     required this.word,
     required this.value,
     this.metaData,
-    this.color,
   });
 
   Map<String, dynamic> toMap() {
