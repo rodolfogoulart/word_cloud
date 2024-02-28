@@ -99,10 +99,17 @@ class _WordCloudViewState extends State<WordCloudView> {
                   Positioned(
                       left: wordcloudsetting.getWordPoint()[i][0],
                       top: wordcloudsetting.getWordPoint()[i][1],
-                      child: widget.customBuilder != null
-                          ? widget.customBuilder!(context, _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget),
-                              wordcloudsetting.dataSetting[i].size!, wordcloudsetting.dataSetting[i].color!)
-                          : _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget))
+                      //SizedBox and FittedBox to ensure widget not overlap with each other
+                      //this was need for some reason the TextPainter and the _Word widget overlap with some padding
+                      child: SizedBox.fromSize(
+                        size: wordcloudsetting.dataSetting[i].size,
+                        child: FittedBox(
+                          child: widget.customBuilder != null
+                              ? widget.customBuilder!(context, _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget),
+                                  wordcloudsetting.dataSetting[i].size!, wordcloudsetting.dataSetting[i].color!)
+                              : _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget),
+                        ),
+                      ))
               ]
             ],
           )
