@@ -146,6 +146,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontWeight: FontWeight.bold,
                 colorlist: const [Colors.black, Colors.redAccent, Colors.indigoAccent],
                 shape: WordCloudEllipse(majoraxis: 500, minoraxis: 500),
+                customBuilder: (context, child, size, color) {
+                  //just some example
+                  return DecoratedBox(
+                    decoration: BoxDecoration(border: Border.all()),
+                    child: child,
+                  );
+                },
                 onTap: (word, value, metaData) {
                   setState(() {
                     count++;

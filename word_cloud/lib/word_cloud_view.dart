@@ -23,6 +23,7 @@ class WordCloudView extends StatefulWidget {
   final Function(String word, double value, dynamic metaData)? onHouver;
   final TextStyle onHouverStyle;
   final String Function(String word, double value, dynamic metaData)? tooltipMessage;
+  final Widget Function(BuildContext context, Widget child, Size size, Color color)? customBuilder;
 
   const WordCloudView({
     super.key,
@@ -43,6 +44,7 @@ class WordCloudView extends StatefulWidget {
     this.onTap,
     this.onHouverStyle = const TextStyle(fontWeight: FontWeight.w900),
     this.onHouver,
+    this.customBuilder,
   });
   @override
   State<WordCloudView> createState() => _WordCloudViewState();
@@ -77,6 +79,10 @@ class _WordCloudViewState extends State<WordCloudView> {
     wordcloudsetting.drawTextOptimized();
   }
 
+  Widget customBuilder(BuildContext context, Widget child) {
+    return child;
+  }
+
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
@@ -93,50 +99,10 @@ class _WordCloudViewState extends State<WordCloudView> {
                   Positioned(
                       left: wordcloudsetting.getWordPoint()[i][0],
                       top: wordcloudsetting.getWordPoint()[i][1],
-                      child: Builder(builder: (context) {
-                        var textStyle = TextStyle(
-                          color: wordcloudsetting.dataSetting[i].color,
-                          fontSize: wordcloudsetting.dataSetting[i].fontSize,
-                          fontWeight: wordcloudsetting.dataSetting[i].fontWeight,
-                          fontFamily: wordcloudsetting.dataSetting[i].fontFamily,
-                          fontStyle: wordcloudsetting.dataSetting[i].fontStyle,
-                        );
-
-                        ValueNotifier onHouver = ValueNotifier(false);
-                        return GestureDetector(
-                          onTap: () {
-                            widget.onTap?.call(wordcloudsetting.data[i].word, wordcloudsetting.data[i].value.toDouble(),
-                                wordcloudsetting.data[i].metaData);
-                          },
-                          child: MouseRegion(
-                            child: ValueListenableBuilder(
-                                valueListenable: onHouver,
-                                builder: (context, value, child) {
-                                  Widget text = Text(
-                                    wordcloudsetting.data[i].word,
-                                    maxLines: 1,
-                                    style: onHouver.value ? textStyle.merge(widget.onHouverStyle) : textStyle,
-                                  );
-                                  if (widget.tooltipMessage != null) {
-                                    text = Tooltip(
-                                        message: widget.tooltipMessage!(wordcloudsetting.data[i].word,
-                                            wordcloudsetting.data[i].value.toDouble(), wordcloudsetting.data[i].metaData),
-                                        child: text);
-                                  }
-                                  return text;
-                                }),
-                            onHover: (event) {
-                              if (onHouver.value) return;
-                              onHouver.value = true;
-                              widget.onHouver?.call(wordcloudsetting.data[i].word, wordcloudsetting.data[i].value.toDouble(),
-                                  wordcloudsetting.data[i].metaData);
-                            },
-                            onExit: (event) {
-                              onHouver.value = false;
-                            },
-                          ),
-                        );
-                      }))
+                      child: widget.customBuilder != null
+                          ? widget.customBuilder!(context, _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget),
+                              wordcloudsetting.dataSetting[i].size!, wordcloudsetting.dataSetting[i].color!)
+                          : _Word(wordcloudsetting: wordcloudsetting, i: i, widget: widget))
               ]
             ],
           )
@@ -145,6 +111,67 @@ class _WordCloudViewState extends State<WordCloudView> {
           // ),
           ),
     );
+  }
+}
+
+class _Word extends StatelessWidget {
+  const _Word({
+    // super.key,
+    required this.wordcloudsetting,
+    required this.i,
+    required this.widget,
+  });
+
+  final WordCloudSetting wordcloudsetting;
+  final int i;
+  final WordCloudView widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(builder: (context) {
+      var textStyle = TextStyle(
+        color: wordcloudsetting.dataSetting[i].color,
+        fontSize: wordcloudsetting.dataSetting[i].fontSize,
+        fontWeight: wordcloudsetting.dataSetting[i].fontWeight,
+        fontFamily: wordcloudsetting.dataSetting[i].fontFamily,
+        fontStyle: wordcloudsetting.dataSetting[i].fontStyle,
+      );
+
+      ValueNotifier onHouver = ValueNotifier(false);
+      return GestureDetector(
+        onTap: () {
+          widget.onTap
+              ?.call(wordcloudsetting.data[i].word, wordcloudsetting.data[i].value.toDouble(), wordcloudsetting.data[i].metaData);
+        },
+        child: MouseRegion(
+          child: ValueListenableBuilder(
+              valueListenable: onHouver,
+              builder: (context, value, child) {
+                Widget text = Text(
+                  wordcloudsetting.data[i].word,
+                  maxLines: 1,
+                  style: onHouver.value ? textStyle.merge(widget.onHouverStyle) : textStyle,
+                );
+                if (widget.tooltipMessage != null) {
+                  text = Tooltip(
+                      message: widget.tooltipMessage!(wordcloudsetting.data[i].word, wordcloudsetting.data[i].value.toDouble(),
+                          wordcloudsetting.data[i].metaData),
+                      child: text);
+                }
+                return text;
+              }),
+          onHover: (event) {
+            if (onHouver.value) return;
+            onHouver.value = true;
+            widget.onHouver?.call(
+                wordcloudsetting.data[i].word, wordcloudsetting.data[i].value.toDouble(), wordcloudsetting.data[i].metaData);
+          },
+          onExit: (event) {
+            onHouver.value = false;
+          },
+        ),
+      );
+    });
   }
 }
 

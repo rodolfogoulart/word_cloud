@@ -35,7 +35,7 @@ class WordCloudSetting {
   List map = [[]];
   List textCenter = [];
   List textPoints = [];
-  List textlist = [];
+  List<TextPainter> textlist = [];
   List isdrawed = [];
   double centerX = 0;
   double centerY = 0;
@@ -247,7 +247,7 @@ class WordCloudSetting {
         int getX = Random().nextInt(mapX.toInt() - w.toInt());
         int direction = Random().nextInt(2);
         if (direction == 0) {
-          for (int y = textCenter[i][1].toInt(); y > 0; y--) {
+          for (int y = textCenter[i][1].toInt(); y >= 0; y--) {
             if (checkMapOptimized(getX, y, w, h)) {
               drawIn(i, getX.toDouble(), y.toDouble());
               isadded = true;
